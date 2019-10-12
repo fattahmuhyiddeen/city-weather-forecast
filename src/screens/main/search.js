@@ -2,6 +2,8 @@
 import React, { Component } from 'react';
 import { View, Text, Image, Platform, StatusBar } from 'react-native';
 import CompleteFlatList from 'react-native-complete-flatlist';
+import { connect } from 'react-redux';
+import { searchCities } from 'ducks/cities';
 
 
 const data = [
@@ -27,37 +29,33 @@ const data = [
   },
 ];
 
+const onSearch = (keyword = '') => searchCities(keyword);
+
 class Search extends Component {
   cell = (data, index) => {
-    const item = data.cleanData ? data.cleanData : data
+    const item = data.cleanData ? data.cleanData : data;
 
-    console.log(data.cleanData)
-    console.log('data.cleanData will be not null if search bar is not empty. caution, data without search is not same like data with search due to implement the highlight component. data.cleanData is equal to data')
-
-    console.log('this is index number : ' + index)
-
-    console.log(item + ' this is original data')
-
-    return <Text>{data.name}</Text>;
+    return <Text>{item.title}</Text>;
   }
 
   render() {
-    const { navigation } = this.props;
+    const { cities } = this.props;
     return (
       <CompleteFlatList
         searchKey={['name', 'status', 'time', 'date']}
-        highlightColor="yellow"
-        pullToRefreshCallback={() => {
-        }}
-        data={data}
-        ref={c => this.completeFlatList = c}
-        renderSeparator={null}
+        onSearch={keyword => onSearch(keyword)}
+        isRefreshing={cities.isLoading}
+        extraData={this.props}
+        data={cities.data}
         renderItem={this.cell}
-        onEndReached={() => console.log("reach end")}
-        onEndReachedThreshold={0}
+        placeholder="Search city name ..."
       />
     );
   }
 }
 
-export default Search;
+const mapStateToProps = (state) => ({
+  cities: state.cities,
+});
+
+export default connect(mapStateToProps)(Search);

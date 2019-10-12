@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
 import persist from './persist';
-import device from './device';
+import cities from './cities';
 
 export default combineReducers({
   persist,
-  device
+  cities,
 });

@@ -1,8 +1,6 @@
 import { combineReducers } from 'redux';
-import account from './account';
-import users from './users';
+import history from './history';
 
 export default combineReducers({
-  account,
-  users,
+  history,
 });

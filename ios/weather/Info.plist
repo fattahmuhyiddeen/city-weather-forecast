@@ -55,5 +55,7 @@
 	<false/>
 	<key>UIUserInterfaceStyle</key>
 	<string>Light</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app use your GPS to sort cities based on your GPS</string>
 </dict>
 </plist>

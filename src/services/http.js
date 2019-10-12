@@ -1,5 +1,4 @@
 import endpoints from 'config/endpoints';
-import { getStore } from 'root-of-redux/store';
 
 export default class RestAPI {
   static call = async ({
@@ -7,18 +6,14 @@ export default class RestAPI {
     data = null,
     onSuccess = () => null,
     onFail = () => null,
+    urlSuffix = '',
   }) => {
     const xhr = new XMLHttpRequest();
-    xhr.open(endpoint[0], endpoints.base_api + endpoint[1]);
+    xhr.open(endpoint[0], endpoints.base_api + endpoint[1] + urlSuffix);
     const requestHeaders = {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
     };
-    const { token } = getStore().getState().persist.account;
-
-    if (token) {
-      requestHeaders['Authorization'] = 'Bearer ' + token;
-    }
 
     for (let header in requestHeaders) {
       xhr.setRequestHeader(header, requestHeaders[header]);
