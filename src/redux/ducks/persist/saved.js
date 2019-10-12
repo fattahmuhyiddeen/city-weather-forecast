@@ -1,7 +1,6 @@
 import { dispatch } from 'root-of-redux/store';
 import http from 'services/http';
 import endpoints from 'config/endpoints';
-// import moment from 'moment';
 
 const initialState = {
   isLoading: false,
@@ -17,7 +16,6 @@ const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 const LOGIN_FAIL = 'LOGIN_FAIL';
 
 const LOGOUT = 'LOGOUT';
-
 
 const REGISTER = 'REGISTER';
 const REGISTER_SUCCESS = 'REGISTER_SUCCESS';

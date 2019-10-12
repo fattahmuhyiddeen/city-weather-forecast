@@ -1,6 +1,4 @@
 import { combineReducers } from 'redux';
-import history from './history';
+import saved from './saved';
 
-export default combineReducers({
-  history,
-});
+export default combineReducers({ saved });
