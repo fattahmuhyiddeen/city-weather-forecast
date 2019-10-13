@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'rea
 import CompleteFlatList from 'react-native-complete-flatlist';
 import { connect } from 'react-redux';
 import { searchCities, getForecast } from 'ducks/cities';
+import { save } from 'ducks/persist/saved';
 
 
 // const data = [
@@ -33,19 +34,23 @@ const onSearch = (keyword = '') => searchCities(keyword);
 
 class Search extends Component {
   cell = (data, index) => {
+    const { forecast } = data;
     return (
       <View style={styles.itemContainer}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <View>
             <Text>{data.title}</Text>
             {data.isLoading && <ActivityIndicator />}
+            {forecast && <View>
+              <Text style={{ color: 'grey' }}>{` Forecast on : ${forecast.applicable_date}`}</Text>
+            </View>}
           </View>
           <View>
-            <TouchableOpacity style={{ borderRadius: 10, padding: 5, borderWidth: 1, alignItems: 'center', borderColor: 'green' }}>
+            <TouchableOpacity onPress={() => save(data)} style={{ borderRadius: 10, padding: 5, borderWidth: 1, alignItems: 'center', borderColor: 'green' }}>
               <Text style={{ color: 'green' }}>Save</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => getForecast(data.woeid)} style={{ borderRadius: 10, padding: 5, borderColor: 'orange', borderWidth: 1, marginTop: 5 }}>
-              <Text style={{ color: 'orange' }}>Check</Text>
+              <Text style={{ color: 'orange' }}>Forecast</Text>
             </TouchableOpacity>
           </View>
         </View>

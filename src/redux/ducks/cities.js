@@ -35,17 +35,20 @@ export const searchCities = (city) => {
 };
 
 export const getForecast = (id) => {
-  dispatch({ type: GET_FORECAST, data: id });
+  dispatch({ type: GET_FORECAST, id });
   const currentDate = new Date();
   currentDate.setDate(currentDate.getDate() + 1); // set to tomorrow
   const date = currentDate.getDate();
   const month = currentDate.getMonth() + 1;
   const year = currentDate.getFullYear();
   http.call({
-    endpoint: endpoints.search_cities,
+    endpoint: endpoints.forecast,
     urlSuffix: `/${id}/${year}/${month}/${date}`,
-    onSuccess: data => dispatch({ type: GET_FORECAST_SUCCESS, data }),
-    onFail: error => dispatch({ type: GET_FORECAST_FAIL, error })
+    onSuccess: data => {
+      data = data.length > 0 ? data[0] : {};
+      dispatch({ type: GET_FORECAST_SUCCESS, data, id })
+    },
+    onFail: error => dispatch({ type: GET_FORECAST_FAIL, error, id })
   });
 };
 
@@ -53,8 +56,25 @@ export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
     case GET_FORECAST:
       state.data.forEach(i => {
-        if (i.woeid == action.data) {
-          i.isLoading = true
+        if (i.woeid == action.id) {
+          i.isLoading = true;
+          i.forecast = null;
+        }
+      });
+      return { ...state };
+    case GET_FORECAST_SUCCESS:
+      state.data.forEach(i => {
+        if (i.woeid == action.id) {
+          i.isLoading = false;
+          i.forecast = action.data;
+        }
+      });
+      return { ...state };
+    case GET_FORECAST_FAIL:
+      state.data.forEach(i => {
+        if (i.woeid == action.id) {
+          i.isLoading = false;
+          i.forecast = null;
         }
       });
       return { ...state };
@@ -62,8 +82,8 @@ export default function reducer(state = initialState, action = {}) {
       return { ...state, isLoading: true }
     case SEARCH_CITIES_SUCCESS:
       const { data } = action;
-      data.sort((a, b) => a.distance - b.distance)
-      return { ...state, isLoading: false, data }
+      data.sort((a, b) => a.distance - b.distance);
+      return { ...state, isLoading: false, data };
     case SEARCH_CITIES_FAIL:
       return { ...state, isLoading: false, error: action.error }
     default:
