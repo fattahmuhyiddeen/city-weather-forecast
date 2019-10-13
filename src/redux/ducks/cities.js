@@ -12,9 +12,9 @@ const SEARCH_CITIES = 'SEARCH_CITIES';
 const SEARCH_CITIES_SUCCESS = 'SEARCH_CITIES_SUCCESS';
 const SEARCH_CITIES_FAIL = 'SEARCH_CITIES_FAIL';
 
-const GET_FORECAST = 'GET_FORECAST';
-const GET_FORECAST_SUCCESS = 'GET_FORECAST_SUCCESS';
-const GET_FORECAST_FAIL = 'GET_FORECAST_FAIL';
+export const GET_FORECAST = 'GET_FORECAST';
+export const GET_FORECAST_SUCCESS = 'GET_FORECAST_SUCCESS';
+export const GET_FORECAST_FAIL = 'GET_FORECAST_FAIL';
 
 const CLEAR_CITIES = 'CLEAR_CITIES';
 
@@ -62,7 +62,7 @@ export default function reducer(state = initialState, action = {}) {
       return initialState;
     case GET_FORECAST:
       state.data.forEach(i => {
-        if (i.woeid == action.id) {
+        if (i.woeid === action.id) {
           i.isLoading = true;
           i.forecast = null;
         }
@@ -70,7 +70,7 @@ export default function reducer(state = initialState, action = {}) {
       return { ...state };
     case GET_FORECAST_SUCCESS:
       state.data.forEach(i => {
-        if (i.woeid == action.id) {
+        if (i.woeid === action.id) {
           i.isLoading = false;
           i.forecast = action.data;
         }
@@ -78,7 +78,7 @@ export default function reducer(state = initialState, action = {}) {
       return { ...state };
     case GET_FORECAST_FAIL:
       state.data.forEach(i => {
-        if (i.woeid == action.id) {
+        if (i.woeid === action.id) {
           i.isLoading = false;
           i.forecast = null;
         }

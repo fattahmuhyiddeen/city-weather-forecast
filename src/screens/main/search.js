@@ -1,61 +1,69 @@
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import CompleteFlatList from 'react-native-complete-flatlist';
+import FastImage from 'react-native-fast-image';
 import { connect } from 'react-redux';
 import { searchCities, getForecast, clearCities } from 'ducks/cities';
 import { save } from 'ducks/persist/saved';
+import ActionButton from './components/actionButton';
 
 const onSearch = (keyword = '') => keyword === '' ? clearCities() : searchCities(keyword);
+const isSaved = (data, savedList) => !!savedList.find(i => i.woeid === data.woeid)
 
-const cell = (data) => {
-  const { forecast } = data;
-  return (
-    <View style={styles.itemContainer}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <View>
-          <Text>{data.title}</Text>
-          {data.isLoading && <ActivityIndicator />}
-          {forecast && (
-            <View>
-              <Text style={{ color: 'grey' }}>{` Forecast on : ${forecast.applicable_date}`}</Text>
-            </View>
-          )}
-        </View>
-        <View>
-          <TouchableOpacity onPress={() => save(data)} style={{ borderRadius: 10, padding: 5, borderWidth: 1, alignItems: 'center', borderColor: 'green' }}>
-            <Text style={{ color: 'green' }}>Save</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => getForecast(data.woeid)} style={{ borderRadius: 10, padding: 5, borderColor: 'orange', borderWidth: 1, marginTop: 5 }}>
-            <Text style={{ color: 'orange' }}>Forecast</Text>
-          </TouchableOpacity>
+
+
+const Search = props => {
+  const cell = (data) => {
+    const { forecast } = data;
+    return (
+      <View style={styles.itemContainer}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View>
+            <Text style={{ color: 'black', fontSize: 18, fontWeight: 'bold' }}>{data.title}</Text>
+            {!data.isLoading && forecast && (
+              <View>
+                <Text style={{ color: 'grey' }}>{`Forecast on ${forecast.applicable_date}`}</Text>
+                <FastImage
+                  source={{ uri: `https://www.metaweather.com/static/img/weather/png/64/${forecast.weather_state_abbr}.png` }}
+                  style={{ width: 30, height: 30 }}
+                  resizeMode={FastImage.resizeMode.contain}
+                />
+                <Text style={{ color: 'black' }}>{forecast.weather_state_name}</Text>
+              </View>
+            )}
+          </View>
+          <View>
+            {isSaved(data, props.saved.data) ?
+              <Text style={{ textAlign: 'center', marginBottom: 5 }}>Saved</Text> :
+              <ActionButton color="green" onPress={() => save(data)} label="Save" />
+            }
+            {data.isLoading ? <ActivityIndicator /> : <ActionButton color="orange" onPress={() => getForecast(data.woeid)} label="Forecast" />}
+          </View>
         </View>
       </View>
-    </View>
+    );
+  };
+  return (
+    <CompleteFlatList
+      onSearch={keyword => onSearch(keyword)}
+      refreshOnLoad={false}
+      isRefreshing={props.cities.isLoading}
+      extraData={props}
+      data={props.cities.data}
+      renderItem={cell}
+      placeholder="Search city name ..."
+    />
   );
 };
 
-const Search = props => (
-  <CompleteFlatList
-    backgroundStyles={styles.background}
-    onSearch={keyword => onSearch(keyword)}
-    refreshOnLoad={false}
-    isRefreshing={props.cities.isLoading}
-    extraData={props}
-    data={props.cities.data}
-    renderSeparator={null}
-    renderItem={cell}
-    placeholder="Search city name ..."
-  />
-);
-
 const styles = StyleSheet.create({
-  itemContainer: { padding: 10, margin: 5, borderRadius: 10, backgroundColor: 'white' },
-  background: { backgroundColor: '#ddd' }
+  itemContainer: { padding: 10, margin: 10 },
 });
 
 const mapStateToProps = state => ({
   cities: state.cities,
+  saved: state.persist.saved,
 });
 
 export default connect(mapStateToProps)(Search);
