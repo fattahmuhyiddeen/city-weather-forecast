@@ -1,8 +1,10 @@
-import React, { Component } from 'react'
-import { View, TouchableOpacity, Text } from 'react-native'
-import DraggableFlatList from 'react-native-draggable-flatlist'
+import React, { Component } from 'react';
+import { View, TouchableOpacity, Text } from 'react-native';
+import DraggableFlatList from 'react-native-draggable-flatlist';
+import { setData } from 'ducks/persist/saved';
+import { connect } from 'react-redux';
 
-class History extends Component {
+class Saved extends Component {
 
   state = {
     data: [...Array(20)].map((d, index) => ({
@@ -28,7 +30,7 @@ class History extends Component {
           fontWeight: 'bold',
           color: 'white',
           fontSize: 32,
-        }}>{item.label}</Text>
+        }}>{item.title}</Text>
       </TouchableOpacity>
     )
   }
@@ -37,15 +39,20 @@ class History extends Component {
     return (
       <View style={{ flex: 1 }}>
         <DraggableFlatList
-          data={this.state.data}
+          style={{ backgroundColor: 'red' }}
+          data={this.props.saved.data}
           renderItem={this.renderItem}
-          keyExtractor={(item, index) => `draggable-item-${item.key}`}
+          extraData={this.props}
+          keyExtractor={(_, index) => `draggable-item-${index}`}
           scrollPercent={5}
-          onMoveEnd={({ data }) => this.setState({ data })}
+          onMoveEnd={({ data }) => setData(data)}
         />
       </View>
     )
   }
 }
+const mapStateToProps = (state) => ({
+  saved: state.persist.saved,
+});
 
-export default History;
+export default connect(mapStateToProps)(Saved);

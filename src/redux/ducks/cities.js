@@ -16,6 +16,10 @@ const GET_FORECAST = 'GET_FORECAST';
 const GET_FORECAST_SUCCESS = 'GET_FORECAST_SUCCESS';
 const GET_FORECAST_FAIL = 'GET_FORECAST_FAIL';
 
+const CLEAR_CITIES = 'CLEAR_CITIES';
+
+export const clearCities = () => dispatch({ type: CLEAR_CITIES });
+
 export const searchCities = (city) => {
   dispatch({ type: SEARCH_CITIES });
   http.call({
@@ -54,6 +58,8 @@ export const getForecast = (id) => {
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
+    case CLEAR_CITIES:
+      return initialState;
     case GET_FORECAST:
       state.data.forEach(i => {
         if (i.woeid == action.id) {
